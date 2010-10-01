@@ -1,12 +1,12 @@
 """Unit tests for parse_ini.py"""
 
-
 import unittest
+import os
 
 import parse_ini
 import custom_exceptions as ce
 
-test_ini_file_name = 'test_file_parse_ini.py'
+test_ini_file_name = 'testfile_parse_ini.ini'
 # This is a dictionary of parameters found in the above name file, copied
 # by hand.
 test_ini_dict = {'a_string' : 'string',
@@ -107,10 +107,21 @@ class TestReturnsUndeclared(unittest.TestCase) :
                 if self.undeclared.has_key(key) :
                     self.assertEqual(self.undeclared[key], value)
 
-# To be implimented
-#class TestParameterDump(unittest.TestCase) :
-#    
-#    def
+class TestWriteParams(unittest.TestCase) :
+    
+    def test_circle(self) :
+        changed_ini = dict(test_ini_dict)
+        changed_ini['a_string'] = 'a different string'
+        changed_ini['a'] = 5
+        changed_ini['a_list'] = [5,6,7]
+        copy_changed = dict(changed_ini)
+        parse_ini.write_params(changed_ini, 'temp.ini')
+        read_ini = parse_ini.parse('temp.ini', test_ini_dict)
+        os.remove('temp.ini')
+        for key, value in copy_changed.iteritems() :
+            self.assertTrue(read_ini.has_key(key))
+            self.assertEqual(value, read_ini[key])
+            self.assertEqual(value, changed_ini[key])
 
 class TestExceptions(unittest.TestCase) :
     

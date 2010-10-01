@@ -9,15 +9,16 @@ think of no reason that you would want the parser to stick around after being
 called and the output dictionaries are pretty self contained.
 
 Revision History:
-    August 2010 - Wrote initial code (fileparser and dictparser). --Kiyo Masui
+  KM August '10 - Wrote initial code (fileparser and dictparser).
+                - Later converted fileparser to just parse, which is an
+                  interface for both files and dicts.
+  KM Oct. '10   - Added write_params
 """
 
 import custom_exceptions as ce
 
 def parse(ini_data, params, return_undeclared=False, checking=11):
-    """
-    Parses a python file or dictionary that defines a dictionary of 
-    parameters.
+    """Parses a python file or dictionary to get parameters.
     
     This function accepts a filename and a dictionary of keys and pre typed
     values. It returns a dictionary of the same keys with values read from
@@ -79,8 +80,7 @@ def parse(ini_data, params, return_undeclared=False, checking=11):
 
 
 def parse_dict(dict_to_parse, params, return_undeclared=False, checking=11):
-    """
-    Same as parse_ini.parse except parameters read from only dictionary.
+    """Same as parse_ini.parse except parameters read from only dictionary.
     
     This function accepts an input dictionary and a dictionary of keys 
     and pre typed
@@ -171,3 +171,29 @@ def _execute_parameter_file(this_parameter_file_name):
     del out['this_parameter_file_name']
     # Return the dictionary of parameters read from file.
     return out
+
+def write_params(params, file_name) :
+    """Write a parameter dictionary to file.
+
+    Given a dictionary of parameters, such as one of the ones read br the parse
+    function, this program writes a compatible ini file.
+    
+    This should work if the parameters are built in types, but no promises for
+    other types. Basically if the out put of 'print param' looks like it could
+    go on the rhs of the assignmanet operator, you are in good shape.
+    """
+
+    file = open(file_name, 'w')
+    for par_name, value in params.iteritems() :
+        line_str = par_name + ' = '
+        try :
+            line_str = line_str + repr(value)
+        except SyntaxError :
+            try :
+                line_str = line_str + repr(value)
+            except SyntaxError :
+                line_str = line_str + "'not representable'"
+        line_str = line_str + '\n'
+        file.write(line_str)
+    file.close()
+        
