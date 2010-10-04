@@ -22,31 +22,32 @@ def parse(ini_data, params, return_undeclared=False, checking=11):
     
     This function accepts a filename and a dictionary of keys and pre typed
     values. It returns a dictionary of the same keys with values read from
-    file.  It optionally performs typechecking.
+    file.  It optionally performs type checking.
 
     Arguments:
         ini_data: a string containing a python file name or a dictionary.  The
             file must contain a script (not function) that defines parameter
-            values in the local namespace.  Alternatly, if ini is a
+            values in the local namespace.  Alternately, if ini is a
             dictionary, then parameters are read from the dictionary.
             Variables must have names and
             types corresponding to the params dictionary argument.
-        params: a dictionary of keys and corrsponding to variable names to be
+        params: a dictionary of keys and corresponding to variable names to be
             read from file and values corresponding to defaults if the
             corresponding variable is not found in the file.
-        return_undeclared: Bool default False.  Whethar to return a second
+        return_undeclared: Bool default False.  Whether to return a second
             dictionary of with variables found in the parameter file but not in
             the in params argument.
         checking: Perform various checks:
-            1's digit: performe type checking on the values in the file and in
+            1's digit: perform type checking on the values in the file and in
                 passed params:
                     0 not at all
                     1 print warning (default)
                     2 (or greater) raise an Exception
-            10s digit: parameter feedback
+            10s digit: parameter feedback:
                     0 none
                     1 print message when parameters remain default value
-                    2 print all parameters and whethar they've defaulted
+                        (default)
+                    2 print all parameters and whether they've defaulted
 
     Returns:
         out_params: A dictionary with the same keys as argument params but 
@@ -95,10 +96,10 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, checking=11):
             level of checking requested).
       """
     
-    # Separate the variouse checks in the checking argument.
+    # Separate the various checks in the checking argument.
     # For checking that the parsed type is the same as the declared params type
     typecheck = checking%10
-    # Level of reporting for what happes to each parameter.
+    # Level of reporting for what happens to each parameter.
     parcheck = (checking - typecheck)//10
     # Same keys as params but for checking but contains only a flag to indicate
     # if parameter retained it's default value.
@@ -180,7 +181,7 @@ def write_params(params, file_name) :
     
     This should work if the parameters are built in types, but no promises for
     other types. Basically if the out put of 'print param' looks like it could
-    go on the rhs of the assignmanet operator, you are in good shape.
+    go on the rhs of the assignment operator, you are in good shape.
     """
 
     file = open(file_name, 'w')
