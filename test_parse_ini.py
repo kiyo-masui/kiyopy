@@ -116,7 +116,7 @@ class TestWriteParams(unittest.TestCase) :
         changed_ini['a_list'] = [5,6,7]
         copy_changed = dict(changed_ini)
         parse_ini.write_params(changed_ini, 'temp.ini')
-        read_ini = parse_ini.parse('temp.ini', test_ini_dict)
+        read_ini = parse_ini.parse('temp.ini', test_ini_dict, checking = 01)
         os.remove('temp.ini')
         for key, value in copy_changed.iteritems() :
             self.assertTrue(read_ini.has_key(key))
@@ -134,7 +134,7 @@ class TestExceptions(unittest.TestCase) :
                 if not type(swapped) is type(value) :
                     self.assertRaises(ce.FileParameterTypeError,
                                       parse_ini.parse, ini_dict,
-                                      template_dict, checking=02)
+                                      template_dict, checking=03)
 
 
 if __name__ == '__main__' :

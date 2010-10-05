@@ -17,7 +17,7 @@ Revision History:
 
 import custom_exceptions as ce
 
-def parse(ini_data, params, return_undeclared=False, checking=11):
+def parse(ini_data, params, return_undeclared=False, checking=22):
     """Parses a python file or dictionary to get parameters.
     
     This function accepts a filename and a dictionary of keys and pre typed
@@ -41,13 +41,13 @@ def parse(ini_data, params, return_undeclared=False, checking=11):
             1's digit: perform type checking on the values in the file and in
                 passed params:
                     0 not at all
-                    1 print warning (default)
-                    2 (or greater) raise an Exception
+                    2 print warning (default)
+                    3 (or greater) raise an Exception
             10s digit: parameter feedback:
                     0 none
-                    1 print message when parameters remain default value
+                    2 print message when parameters remain default value
                         (default)
-                    2 print all parameters and whether they've defaulted
+                    3 print all parameters and whether they've defaulted
 
     Returns:
         out_params: A dictionary with the same keys as argument params but 
@@ -80,7 +80,7 @@ def parse(ini_data, params, return_undeclared=False, checking=11):
     return parse_dict(dict_to_parse, params, return_undeclared, checking)
 
 
-def parse_dict(dict_to_parse, params, return_undeclared=False, checking=11):
+def parse_dict(dict_to_parse, params, return_undeclared=False, checking=22):
     """Same as parse_ini.parse except parameters read from only dictionary.
     
     This function accepts an input dictionary and a dictionary of keys 
@@ -118,7 +118,7 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, checking=11):
             if key.strip() == inkey.strip():
                 if typecheck > 0:
                     if type(value)!=type(invalue):
-                        if typecheck > 1:
+                        if typecheck > 2:
                             raise ce.FileParameterTypeError(
                                 "Tried to assign an input "
                                 "parameter to the value of the wrong type " 
@@ -143,7 +143,7 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, checking=11):
         for key, value in out_params.iteritems():
             if defaulted_params[key] :
                 print "parameter: "+key+" defaulted to value: "+str(value)
-            elif parcheck > 1 :
+            elif parcheck > 2 :
                 print "parameter: "+key+" obtained value: "+str(value)
 
     if return_undeclared :
