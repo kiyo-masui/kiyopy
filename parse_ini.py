@@ -175,7 +175,7 @@ def _execute_parameter_file(this_parameter_file_name):
     # Return the dictionary of parameters read from file.
     return out
 
-def write_params(params, file_name) :
+def write_params(params, file_name, prefix='') :
     """Write a parameter dictionary to file.
 
     Given a dictionary of parameters, such as one of the ones read br the parse
@@ -188,7 +188,7 @@ def write_params(params, file_name) :
 
     file = open(file_name, 'w')
     for par_name, value in params.iteritems() :
-        line_str = par_name + ' = '
+        line_str = prefix + par_name + ' = '
         try :
             line_str = line_str + repr(value)
         except SyntaxError :

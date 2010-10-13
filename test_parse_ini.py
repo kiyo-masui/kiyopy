@@ -136,7 +136,7 @@ class TestExceptions(unittest.TestCase) :
                                       parse_ini.parse, ini_dict,
                                       template_dict, checking=03)
 
-class TestPrifix(unittest.TestCase) :
+class TestPrefix(unittest.TestCase) :
     
 
     def setUp(self) :
@@ -148,15 +148,15 @@ class TestPrifix(unittest.TestCase) :
                              'b' : 2,
                              'tt_d' : 3
                              }
-
-    def test_prefix(self) :
-        params_init = {'a_string' : 'blah',
+        self.params_init = {'a_string' : 'blah',
                        'pi' : 3.0,
                        'a' : 5,
                        'b' : 10
                         }
+
+    def test_prefix(self) :
         out_dict, undeclared = parse_ini.parse(self.prefixed_ini_dict,
-                                             params_init, prefix='tt_',
+                                             self.params_init, prefix='tt_',
                                              return_undeclared=True,
                                              checking=01)
         self.assertEqual(out_dict['a_string'], 'string')
@@ -165,10 +165,16 @@ class TestPrifix(unittest.TestCase) :
         self.assertAlmostEqual(out_dict['pi'], 3.14159)
         self.assertEqual(undeclared['b'], 2)
         self.assertEqual(undeclared['tt_d'], 3)
-
-
-
         
+    def test_circle(self) :
+        changed_ini = dict(self.params_init)
+        changed_ini['a'] = 15
+        parse_ini.write_params(changed_ini, 'temp.ini', prefix='tt_')
+        read_ini = parse_ini.parse('temp.ini', self.params_init, prefix='tt_',
+                                   checking = 01)
+        self.assertEqual(read_ini['a'], 15)
+        self.assertEqual(read_ini['b'], 10)
+        os.remove('temp.ini')
 
 
 if __name__ == '__main__' :
