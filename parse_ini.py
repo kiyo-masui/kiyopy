@@ -17,7 +17,7 @@ Revision History:
 
 import custom_exceptions as ce
 
-def parse(ini_data, params, return_undeclared=False, checking=22):
+def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
     """Parses a python file or dictionary to get parameters.
     
     This function accepts a filename and a dictionary of keys and pre typed
@@ -77,10 +77,12 @@ def parse(ini_data, params, return_undeclared=False, checking=22):
         raise TypeError("Argument ini must be a dictionary, file name, "
                         "or None (to accept defaults).")
     
-    return parse_dict(dict_to_parse, params, return_undeclared, checking)
+    return parse_dict(dict_to_parse, params, return_undeclared, prefix,
+                     checking)
 
 
-def parse_dict(dict_to_parse, params, return_undeclared=False, checking=22):
+def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
+               checking=22):
     """Same as parse_ini.parse except parameters read from only dictionary.
     
     This function accepts an input dictionary and a dictionary of keys 
@@ -115,7 +117,7 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, checking=22):
         found_match_flag = False
         for key, value in params.iteritems():
             # Check for matching keys. Note stripping.
-            if key.strip() == inkey.strip():
+            if prefix + key.strip() == inkey.strip():
                 if typecheck > 0:
                     if type(value)!=type(invalue):
                         if typecheck > 2:

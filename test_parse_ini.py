@@ -136,6 +136,40 @@ class TestExceptions(unittest.TestCase) :
                                       parse_ini.parse, ini_dict,
                                       template_dict, checking=03)
 
+class TestPrifix(unittest.TestCase) :
+    
+
+    def setUp(self) :
+        self.prefixed_ini_dict = {'tt_a_string' : 'string',
+                             'tt_a_list' : [1,2,3],
+                             'tt_a_mixed_tuple' : ('A', 1, 2*3.14159),
+                             'tt_pi' : 3.14159,
+                             'tt_a' : 1,
+                             'b' : 2,
+                             'tt_d' : 3
+                             }
+
+    def test_prefix(self) :
+        params_init = {'a_string' : 'blah',
+                       'pi' : 3.0,
+                       'a' : 5,
+                       'b' : 10
+                        }
+        out_dict, undeclared = parse_ini.parse(self.prefixed_ini_dict,
+                                             params_init, prefix='tt_',
+                                             return_undeclared=True,
+                                             checking=01)
+        self.assertEqual(out_dict['a_string'], 'string')
+        self.assertEqual(out_dict['a'], 1)
+        self.assertEqual(out_dict['b'], 10)
+        self.assertAlmostEqual(out_dict['pi'], 3.14159)
+        self.assertEqual(undeclared['b'], 2)
+        self.assertEqual(undeclared['tt_d'], 3)
+
+
+
+        
+
 
 if __name__ == '__main__' :
     unittest.main()
