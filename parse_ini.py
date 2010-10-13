@@ -175,7 +175,7 @@ def _execute_parameter_file(this_parameter_file_name):
     # Return the dictionary of parameters read from file.
     return out
 
-def write_params(params, file_name, prefix='') :
+def write_params(params, file_name, prefix='', mode='w') :
     """Write a parameter dictionary to file.
 
     Given a dictionary of parameters, such as one of the ones read br the parse
@@ -185,8 +185,10 @@ def write_params(params, file_name, prefix='') :
     other types. Basically if the out put of 'print param' looks like it could
     go on the rhs of the assignment operator, you are in good shape.
     """
-
-    file = open(file_name, 'w')
+    
+    if not (mode == 'w' or mode == 'a') :
+        raise ValueError("Params can be written with mode either 'w' or 'a'.")
+    file = open(file_name, mode)
     for par_name, value in params.iteritems() :
         line_str = prefix + par_name + ' = '
         try :
