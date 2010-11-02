@@ -23,7 +23,6 @@ class TestMKDIR(unittest.TestCase) :
         utils.mkparents('stuff')
         self.assertTrue(not os.path.exists('stuff'))
 
-
     def tearDown(self) :
         if os.path.exists ('tmp/tmp2') :
             os.rmdir('tmp/tmp2')
