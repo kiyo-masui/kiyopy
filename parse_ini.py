@@ -70,9 +70,9 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
         if parcheck > 0 :
             print 'No input, all parameters defaulted.'
         if return_undeclared :
-            return params, {}
+            return dict(params), {}
         else :
-            return params
+            return dict(params)
     else :
         raise TypeError("Argument ini must be a dictionary, file name, "
                         "or None (to accept defaults).")
