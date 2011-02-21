@@ -1,2 +1,2 @@
-__all__= ["parse_ini, utils, custom_exceptions"]
+__all__= ["parse_ini"]
 

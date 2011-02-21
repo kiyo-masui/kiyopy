@@ -1,8 +1,11 @@
-"""This parser is my system for reading input files to large programs.  The idea
+"""This parser is my system for reading input files for large programs.  The idea
 is that the only argument for the program should always be the input file and
 all the parameters are read from that file.  The input file will have plain
 python syntax.  I've found this to have the best flexibility, avoiding the
-need to have many versions of the same code.
+need to have many versions of the same code.  However, because any python
+statements are executed when the input file is read, this system is not
+appropriate if security is an issue (it's an arbitrary code exceution security
+hole).
 
 This is purposely written as a set of functions rather than a class.  I can
 think of no reason that you would want the parser to stick around after being
@@ -25,7 +28,7 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
     file.  It optionally performs type checking.
 
     Arguments:
-        ini_data: a string containing a python file name or a dictionary.  The
+        ini_data: a string, containing a python file name, or a dictionary.  The
             file must contain a script (not function) that defines parameter
             values in the local namespace.  Alternately, if ini is a
             dictionary, then parameters are read from the dictionary.
@@ -37,6 +40,9 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
         return_undeclared: Bool default False.  Whether to return a second
             dictionary of with variables found in the parameter file but not in
             the in params argument.
+        prefix: String default ''.  A prefix added to parameter names (defined
+            in the keys of params) when read from the input file or dictionary.
+            The prefix is not added to the returned output dictionary.
         checking: Perform various checks:
             1's digit: perform type checking on the values in the file and in
                 passed params:
@@ -80,11 +86,13 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
     return parse_dict(dict_to_parse, params, return_undeclared, prefix,
                      checking)
 
-
 def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
                checking=22):
     """Same as parse_ini.parse except parameters read from only dictionary.
     
+    This function is intended for internal use.  All of it's functionality is
+    availble from the p[arse function.
+
     This function accepts an input dictionary and a dictionary of keys 
     and pre typed
     values. It returns a dictionary of the same keys with values read from
@@ -153,8 +161,6 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
     else :
         return out_params
 
-    
-
 def _execute_parameter_file(this_parameter_file_name):
     """
     Executes python script in named file and returns dictionary of variables
@@ -184,6 +190,13 @@ def write_params(params, file_name, prefix='', mode='w') :
     This should work if the parameters are built in types, but no promises for
     other types. Basically if the out put of 'print param' looks like it could
     go on the rhs of the assignment operator, you are in good shape.
+
+    arguments:
+        params : dictionary of parameter names and values to be written to
+            file.
+        file_name: sting. File_name to write to.
+        prefix : prefix for teh parameter names when written to file.
+        mode: 'a' or 'w'.  Whether to open the file in write or append mode.
     """
     
     if not (mode == 'w' or mode == 'a') :

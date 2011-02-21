@@ -1,7 +1,6 @@
-"""
-Custom Exceptions.
+"""Custom Exceptions.
 
-These mostly dont' do anything special, but are defined such that the
+These mostly don't do anything special, but are defined such that the
 exceptions I raise don't conflict with generic exceptions raised by built-ins.
 """
 
