@@ -16,11 +16,13 @@ Revision History:
                 - Later converted fileparser to just parse, which is an
                   interface for both files and dicts.
   KM Oct. '10   - Added write_params
+  KM Mar. '11   - Changed checking argument to feedback and type_check.
 """
 
 import custom_exceptions as ce
 
-def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
+def parse(ini_data, params, return_undeclared=False, prefix='',
+          feedback=2, type_check=False, checking=-1):
     """Parses a python file or dictionary to get parameters.
     
     This function accepts a filename and a dictionary of keys and pre typed
@@ -43,7 +45,13 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
         prefix: String default ''.  A prefix added to parameter names (defined
             in the keys of params) when read from the input file or dictionary.
             The prefix is not added to the returned output dictionary.
-        checking: Perform various checks:
+        feedback: integer 1 to 10, default 2.  Desired feedback level,
+            controling what to pring to the standard out.
+        type_check: Boolian default False. Whethar to raise an exception if the
+            recived value for a parameter is a different type than the default
+            value.
+        checking (deprecated, use feedback and typecheck):
+            Perform various checks:
             1's digit: perform type checking on the values in the file and in
                 passed params:
                     0 not at all
@@ -61,19 +69,30 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
         undeclared: Optional. A dictionary that holds any key found in the 
             file but not in params. Returned if return_undeclared=True.
     """
-    parcheck = (checking - checking%10)//10
+    
+    # Deal with deprecated checking variable.
+    if checking != -1 and feedback == 2 and type_check == False:
+        old_typecheck = checking%10
+        parcheck = (checking - old_typecheck)//10
+        if old_typecheck >= 3 :
+            type_check = True
+        if old_typecheck >= 2 and parcheck > 2 :
+            feedback = 2
+        else :
+            feedback = parcheck
+        
     if isinstance(ini_data, str) :
-        if parcheck > 0 :
+        if feedback > 0 :
             print 'Reading parameters from file: '+ ini_data
         # Convert local variables defined in python script to dictionary.
         # This is in a separate function to avoid namespace issues.
         dict_to_parse = _execute_parameter_file(ini_data)
     elif isinstance(ini_data, dict) :
-        if parcheck > 0 :
+        if feedback > 0 :
             print 'Reading parameters from dictionary.'
         dict_to_parse = ini_data
     elif ini_data is None :
-        if parcheck > 0 :
+        if feedback > 0 :
             print 'No input, all parameters defaulted.'
         if return_undeclared :
             return dict(params), {}
@@ -84,20 +103,21 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
                         "or None (to accept defaults).")
     
     return parse_dict(dict_to_parse, params, return_undeclared, prefix,
-                     checking)
+                      feedback, type_check)
 
 def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
-               checking=22):
+               feedback=2, type_check=False):
     """Same as parse_ini.parse except parameters read from only dictionary.
     
     This function is intended for internal use.  All of it's functionality is
-    availble from the p[arse function.
+    availble from the parse function.
 
     This function accepts an input dictionary and a dictionary of keys 
     and pre typed
     values. It returns a dictionary of the same keys with values read from
-    the input dictionary.  See the docstring for pars for more
-    information, the only difference is the argument ini replaces fname.
+    the input dictionary.  See the docstring for parse for more
+    information, the only difference is the first argument must be a
+    dictionary.
 
     Arguments:
         dict_to_parse: A dictionary containing keys and values to be read as
@@ -106,11 +126,6 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
             level of checking requested).
       """
     
-    # Separate the various checks in the checking argument.
-    # For checking that the parsed type is the same as the declared params type
-    typecheck = checking%10
-    # Level of reporting for what happens to each parameter.
-    parcheck = (checking - typecheck)//10
     # Same keys as params but for checking but contains only a flag to indicate
     # if parameter retained it's default value.
     defaulted_params = {}
@@ -126,18 +141,17 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
         for key, value in params.iteritems():
             # Check for matching keys. Note stripping.
             if prefix + key.strip() == inkey.strip():
-                if typecheck > 0:
-                    if type(value)!=type(invalue):
-                        if typecheck > 2:
-                            raise ce.FileParameterTypeError(
-                                "Tried to assign an input "
-                                "parameter to the value of the wrong type " 
-                                "and asked for strict type checking. "
-                                "Parameter name: " + key)
-                        else:
-                            print ("Warning: Assigned an input "
-                                "parameter to the value of the wrong type. "
-                                "Parameter name: " + key)
+                if type(value) != type(invalue):
+                    if type_check:
+                        raise ce.FileParameterTypeError(
+                            "Tried to assign an input "
+                            "parameter to the value of the wrong type " 
+                            "and asked for strict type checking. "
+                            "Parameter name: " + key)
+                    elif feedback > 1:
+                        print ("Warning: Assigned an input "
+                            "parameter to the value of the wrong type. "
+                            "Parameter name: " + key)
                 out_params[key] = invalue
                 found_match_flag = True
                 defaulted_params[key]=False
@@ -148,12 +162,12 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
             undeclared[inkey]=invalue
     # Check if parameters have remained a default value and print information
     # about the parameters that were set. Depending on feedback level.
-    if parcheck > 0 :
+    if feedback > 1 :
         print "Parameters set."
         for key, value in out_params.iteritems():
             if defaulted_params[key] :
                 print "parameter: "+key+" defaulted to value: "+str(value)
-            elif parcheck > 2 :
+            elif feedback > 2 :
                 print "parameter: "+key+" obtained value: "+str(value)
 
     if return_undeclared :

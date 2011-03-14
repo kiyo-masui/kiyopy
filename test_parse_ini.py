@@ -39,7 +39,7 @@ class TestReads(unittest.TestCase) :
     def test_parse_dict_reads(self) :
         self.out_dict = parse_ini.parse_dict(test_ini_dict, self.template_dict,
                                              return_undeclared=False, 
-                                             checking=0)
+                                             feedback=0)
 
     def test_parse_readsfile(self) :
         self.out_dict = parse_ini.parse(test_ini_file_name, self.template_dict,
