@@ -9,6 +9,11 @@ class DataError(Exception) :
     expected properties."""
     pass
 
+class NextIteration(Exception) :
+    """Exception raised to skip iterations in a nested loop in a controled way.
+    """
+    pass
+
 class FileParameterTypeError(TypeError) :
     """Exception to raise if a parameter read from file should be a certain
     type and is not."""
