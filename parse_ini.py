@@ -24,7 +24,8 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
     values. It returns a dictionary of the same keys with values read from
     file.  It optionally performs type checking.
 
-    Arguments:
+    Parameters
+    ----------
         ini_data: a string containing a python file name or a dictionary.  The
             file must contain a script (not function) that defines parameter
             values in the local namespace.  Alternately, if ini is a
@@ -49,12 +50,14 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
                         (default)
                     3 print all parameters and whether they've defaulted
 
-    Returns:
+    Returns
+    -------
         out_params: A dictionary with the same keys as argument params but 
             with values read from file.
         undeclared: Optional. A dictionary that holds any key found in the 
             file but not in params. Returned if return_undeclared=True.
     """
+
     parcheck = (checking - checking%10)//10
     if isinstance(ini_data, str) :
         if parcheck > 0 :
@@ -79,7 +82,6 @@ def parse(ini_data, params, return_undeclared=False, prefix='', checking=22):
     
     return parse_dict(dict_to_parse, params, return_undeclared, prefix,
                      checking)
-
 
 def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
                checking=22):
@@ -153,8 +155,6 @@ def parse_dict(dict_to_parse, params, return_undeclared=False, prefix='',
     else :
         return out_params
 
-    
-
 def _execute_parameter_file(this_parameter_file_name):
     """
     Executes python script in named file and returns dictionary of variables
@@ -166,7 +166,12 @@ def _execute_parameter_file(this_parameter_file_name):
 
     # Execute the filename which presumably holds a python script. This will
     # bring the parameters defined there into the local scope.
-    exec(open(this_parameter_file_name).read())
+    try:
+        exec(open(this_parameter_file_name).read())
+    except Exception as E:
+        msg = ("Execution of parameter file " + this_parameter_file_name +
+               " caused an error.  The error message was: " + repr(E))
+        raise ce.ParameterFileError(msg)
     # Store the local scope as a dictionary.
     out = locals()
     # Delete all entries of out that correspond to variables defined in this

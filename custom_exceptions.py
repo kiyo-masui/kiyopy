@@ -14,3 +14,7 @@ class FileParameterTypeError(TypeError) :
     """Exception to raise if a parameter read from file should be a certain
     type and is not."""
     pass
+
+class ParameterFileError(Exception) :
+    """Exception to raise if reading a parameter file fails."""
+    pass
