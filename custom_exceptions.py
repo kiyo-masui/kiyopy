@@ -1,13 +1,17 @@
-"""
-Custom Exceptions.
+"""Custom Exceptions.
 
-These mostly dont' do anything special, but are defined such that the
+These mostly don't do anything special, but are defined such that the
 exceptions I raise don't conflict with generic exceptions raised by built-ins.
 """
 
 class DataError(Exception) :
     """Exception to raise if data of some sort is invalid or does not have
     expected properties."""
+    pass
+
+class NextIteration(Exception) :
+    """Exception raised to skip iterations in a nested loop in a controled way.
+    """
     pass
 
 class FileParameterTypeError(TypeError) :
