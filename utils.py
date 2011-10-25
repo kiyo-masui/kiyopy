@@ -35,6 +35,9 @@ def abbreviate_file_path(fname) :
     split_fname = fname.split('/')
     if len(split_fname) > 1 :
         fname_abbr = split_fname[-2] + '/' + split_fname[-1]
+    elif len(split_fname) > 2 :
+        fname_abbr = (split_fname[-3] + '/' split_fname[-2]
+                      + '/' + split_fname[-1])
     else :
         fname_abbr = fname
 
